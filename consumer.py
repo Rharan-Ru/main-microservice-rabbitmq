@@ -4,8 +4,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
 import django
 django.setup()
 
-from django.core.management import call_command
-
 import json
 import pika
 from user_products.models import Product
@@ -13,7 +11,7 @@ from user_products.models import Product
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmqhost'))
 channel = connection.channel()
 
-channel.queue_declare(queue='hello')
+channel.queue_declare(queue='main')
 
 
 def callback(ch, method, properties, body):
@@ -39,7 +37,7 @@ def callback(ch, method, properties, body):
         print('Product deleted')
 
 
-channel.basic_consume(queue='hello', on_message_callback=callback, auto_ack=True)
+channel.basic_consume(queue='main', on_message_callback=callback, auto_ack=True)
 print(' [*] Waiting for messages. To exit press CTRL+C')
 channel.start_consuming()
 channel.close()
